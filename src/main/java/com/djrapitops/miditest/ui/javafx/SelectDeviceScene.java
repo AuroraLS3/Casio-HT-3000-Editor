@@ -12,6 +12,7 @@ import javafx.scene.layout.VBox;
 
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiSystem;
+import javax.sound.midi.MidiUnavailableException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -71,7 +72,13 @@ public class SelectDeviceScene extends Scene {
     private static Map<String, MidiDevice.Info> getDevices() {
         Map<String, MidiDevice.Info> devices = new LinkedHashMap<>();
         for (MidiDevice.Info info : MidiSystem.getMidiDeviceInfo()) {
-            devices.put(info.getName() + " : " + info.getVendor(), info);
+            try {
+                MidiDevice device = MidiSystem.getMidiDevice(info);
+                if (device.getMaxReceivers() > 0) {
+                    devices.put(info.getName() + " : " + info.getVendor(), info);
+                }
+            } catch (MidiUnavailableException e) {
+            }
         }
         return devices;
     }

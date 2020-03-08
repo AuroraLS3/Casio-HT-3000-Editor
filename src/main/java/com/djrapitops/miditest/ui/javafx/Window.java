@@ -50,6 +50,8 @@ public class Window extends Application {
                 scene = new SelectDeviceScene(state);
                 break;
             case SEND_MIDI_SIGNAL:
+                scene = new SendMidiScene(state);
+                break;
             default:
                 scene = new FatalErrorScene(new IllegalStateException("Unsupported view: " + newView.name()));
                 break;
