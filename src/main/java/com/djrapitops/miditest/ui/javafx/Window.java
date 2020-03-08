@@ -11,6 +11,7 @@ public class Window extends Application {
 
     private Stage primaryStage;
     private State state;
+    private View shownView = null;
 
     public Window() {
         state = new State();
@@ -21,26 +22,45 @@ public class Window extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) {
-        this.primaryStage = primaryStage;
+    public void start(Stage stage) {
+        primaryStage = stage;
 
         // primaryStage.getIcons().add(new Image(Window.class.getResourceAsStream("/Logo.png")));
 
         try {
             primaryStage.setTitle("Midi Tester");
 
-            Scene selectDevice = new SelectDeviceScene(state);
-            ObservableList<String> stylesheets = selectDevice.getStylesheets();
-            stylesheets.addAll(
-                    Main.class.getResource("/com/jfoenix/assets/css/jfoenix-fonts.css").toExternalForm(),
-                    Main.class.getResource("/com/jfoenix/assets/css/jfoenix-design.css").toExternalForm()
-            );
-            primaryStage.setScene(selectDevice);
+            state.addListener(this::setScene);
+            state.setView(View.SELECT_MIDI_OUT);
             primaryStage.show();
         } catch (Exception e) {
-            primaryStage.setScene(new FatalErrorScene(e));
-            primaryStage.show();
+            stage.setScene(new FatalErrorScene(e));
+            stage.show();
         }
+    }
+
+    private void setScene(State state) {
+        Scene scene;
+        View newView = state.getView();
+        if (shownView == newView) {
+            return;
+        }
+        switch (newView) {
+            case SELECT_MIDI_OUT:
+                scene = new SelectDeviceScene(state);
+                break;
+            case SEND_MIDI_SIGNAL:
+            default:
+                scene = new FatalErrorScene(new IllegalStateException("Unsupported view: " + newView.name()));
+                break;
+        }
+        ObservableList<String> stylesheets = scene.getStylesheets();
+        stylesheets.addAll(
+                Main.class.getResource("/com/jfoenix/assets/css/jfoenix-fonts.css").toExternalForm(),
+                Main.class.getResource("/com/jfoenix/assets/css/jfoenix-design.css").toExternalForm()
+        );
+        shownView = newView;
+        primaryStage.setScene(scene);
     }
 
     @Override
