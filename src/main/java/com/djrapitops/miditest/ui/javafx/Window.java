@@ -34,7 +34,7 @@ public class Window extends Application {
             state.setView(View.SELECT_MIDI_OUT);
             primaryStage.show();
         } catch (Exception e) {
-            stage.setScene(new FatalErrorScene(e));
+            stage.setScene(new FatalErrorScene(state, e));
             stage.show();
         }
     }
@@ -53,7 +53,7 @@ public class Window extends Application {
                 scene = new SendMidiScene(state);
                 break;
             default:
-                scene = new FatalErrorScene(new IllegalStateException("Unsupported view: " + newView.name()));
+                scene = new FatalErrorScene(state, new IllegalStateException("Unsupported view: " + newView.name()));
                 break;
         }
         ObservableList<String> stylesheets = scene.getStylesheets();

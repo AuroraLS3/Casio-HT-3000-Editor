@@ -1,5 +1,7 @@
 package com.djrapitops.miditest.ui.javafx;
 
+import com.djrapitops.miditest.State;
+import com.jfoenix.controls.JFXButton;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
@@ -12,11 +14,11 @@ import java.util.Arrays;
 
 public class FatalErrorScene extends Scene {
 
-    public FatalErrorScene(Throwable e) {
-        super(getText(e), 700, 500);
+    public FatalErrorScene(State state, Throwable e) {
+        super(getText(state, e), 700, 500);
     }
 
-    private static VBox getText(Throwable e) {
+    private static VBox getText(State state, Throwable e) {
         VBox stackTrace = new VBox();
         ObservableList<Node> children = stackTrace.getChildren();
 
@@ -44,6 +46,11 @@ public class FatalErrorScene extends Scene {
         stackTraceArea.prefHeightProperty().bind(stackTrace.heightProperty());
         stackTraceArea.prefWidthProperty().bind(stackTrace.widthProperty());
         children.add(stackTraceArea);
+
+        JFXButton reset = new JFXButton("Restart");
+        reset.setStyle(Styles.BG_LIGHT_GREEN);
+        reset.setOnAction(event -> state.setView(View.SELECT_MIDI_OUT));
+        children.add(reset);
 
         return stackTrace;
     }

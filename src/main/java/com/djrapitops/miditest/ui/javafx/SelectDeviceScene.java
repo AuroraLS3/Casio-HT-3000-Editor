@@ -72,12 +72,11 @@ public class SelectDeviceScene extends Scene {
     private static Map<String, MidiDevice.Info> getDevices() {
         Map<String, MidiDevice.Info> devices = new LinkedHashMap<>();
         for (MidiDevice.Info info : MidiSystem.getMidiDeviceInfo()) {
-            try {
-                MidiDevice device = MidiSystem.getMidiDevice(info);
-                if (device.getMaxReceivers() > 0) {
-                    devices.put(info.getName() + " : " + info.getVendor(), info);
-                }
+            try (MidiDevice device = MidiSystem.getMidiDevice(info)) {
+                device.open();
+                devices.put(info.getName() + " : " + info.getVendor(), info);
             } catch (MidiUnavailableException e) {
+//                System.out.println(info.getName() + " errored: " + e.toString());
             }
         }
         return devices;

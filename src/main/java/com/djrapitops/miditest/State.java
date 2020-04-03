@@ -22,7 +22,7 @@ public class State {
     }
 
     private void stateChanged() {
-        System.out.println(this);
+//        System.out.println(this);
         for (Consumer<State> listener : listeners) {
             listener.accept(this);
         }
